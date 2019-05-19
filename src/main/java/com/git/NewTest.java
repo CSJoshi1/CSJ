@@ -7,19 +7,20 @@ import com.relevantcodes.extentreports.LogStatus;
 import com.test.utils.ExtentManager;
 
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.bcel.classfile.Method;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
-import org.testng.annotations.AfterClass;
+
 
 public class NewTest {
 	
@@ -28,7 +29,7 @@ public class NewTest {
 	
   @Test(priority=1)
   public void launch_Application() {
-	  driver.get("https://www.google.com/");
+	  
 	  driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 	  driver.manage().window().maximize();
 	  Assert.assertEquals("Google", driver.getTitle());
@@ -43,7 +44,11 @@ public class NewTest {
   
   @BeforeMethod
   public void beforeMethod(Method method) {
-	  extentTest=ExtentManager.getInstance().startTest(method.getName().replaceAll("_", " "));
+	  try {
+		  extentTest=ExtentManager.getInstance().startTest(method.getName().replaceAll("_", " "));
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
   }
 
   @AfterMethod
@@ -64,13 +69,14 @@ public class NewTest {
 		  ExtentManager.getInstance().endTest(extentTest);
   }
 
-  @BeforeClass
+  @BeforeTest
   public void beforeClass() {
 	  System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
 	  driver=new ChromeDriver();
+	  driver.get("https://www.google.com/");
   }
 
-  @AfterClass
+  @AfterTest
   public void afterClass() {
 	  ExtentManager.getInstance().flush();
 	  ExtentManager.getInstance().close();
